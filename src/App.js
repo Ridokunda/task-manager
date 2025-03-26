@@ -1,18 +1,23 @@
 import React, { useState } from "react";
-import TaskList from "./components/TaskList"; // Import TaskList
+import TaskList from "./components/TaskList";
+import TaskForm from "./components/TaskForm";
 
 function App() {
-  // Sample task list
   const [tasks, setTasks] = useState([
     { id: 1, text: "Learn React", completed: false },
     { id: 2, text: "Build a Task List", completed: true },
-    { id: 3, text: "Push to GitHub", completed: false },
   ]);
+
+  const addTask = (taskText) => {
+    const newTask = { id: tasks.length + 1, text: taskText, completed: false };
+    setTasks([...tasks, newTask]); // Ensure state updates
+  };
 
   return (
     <div className="App">
       <h1>Task Manager</h1>
-      <TaskList tasks={tasks} />
+      <TaskForm addTask={addTask} />
+      <TaskList tasks={tasks} setTasks={setTasks} />
     </div>
   );
 }
