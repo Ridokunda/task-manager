@@ -1,16 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
 
 function App() {
-  const [tasks, setTasks] = useState([
-    { id: 1, text: "Learn React", completed: false },
-    { id: 2, text: "Build a Task List", completed: true },
-  ]);
+  const [tasks, setTasks] = useState(() => {
+    // Load tasks from local storage when the component mounts
+    const storedTasks = localStorage.getItem("tasks");
+    return storedTasks ? JSON.parse(storedTasks) : [];
+  });
+
+  // Save tasks to local storage whenever tasks change
+  useEffect(() => {
+    console.log("Saving tasks to localStorage:", tasks);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   const addTask = (taskText) => {
-    const newTask = { id: tasks.length + 1, text: taskText, completed: false };
-    setTasks([...tasks, newTask]); // Ensure state updates
+    const newTask = { id: Date.now(), text: taskText, completed: false };
+    setTasks((prevTasks) => [...prevTasks, newTask]);
   };
 
   return (
