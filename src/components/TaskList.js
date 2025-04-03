@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import "../App.css";
 
 const TaskList = ({ tasks, setTasks }) => {
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editedText, setEditedText] = useState("");
+
   const handleToggleComplete = (id) => {
     const updatedTasks = tasks.map((task) =>
       task.id === id ? { ...task, completed: !task.completed } : task
@@ -13,10 +16,20 @@ const TaskList = ({ tasks, setTasks }) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this task?");
     if (!confirmDelete) return;
 
-    document.getElementById(`task-${id}`).classList.add("fade-out");
-    setTimeout(() => {
-      setTasks(tasks.filter((task) => task.id !== id));
-    }, 300);
+    setTasks(tasks.filter((task) => task.id !== id));
+  };
+
+  const handleEdit = (id, text) => {
+    setEditingTaskId(id);
+    setEditedText(text);
+  };
+
+  const handleSaveEdit = (id) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === id ? { ...task, text: editedText } : task
+    );
+    setTasks(updatedTasks);
+    setEditingTaskId(null);
   };
 
   return (
@@ -27,17 +40,28 @@ const TaskList = ({ tasks, setTasks }) => {
           <p>No tasks available.</p>
         ) : (
           tasks.map((task) => (
-            <li key={task.id} id={`task-${task.id}`} className={task.completed ? "completed" : ""}>
+            <li key={task.id} className={task.completed ? "completed" : ""}>
               <input
                 type="checkbox"
                 checked={task.completed}
-                className="task-checkbox"
                 onChange={() => handleToggleComplete(task.id)}
               />
-              {task.text}
-              <button onClick={() => handleDelete(task.id)} style={{ marginLeft: "10px", cursor: "pointer" }}>
-                ❌
-              </button>
+              {editingTaskId === task.id ? (
+                <>
+                  <input
+                    type="text"
+                    value={editedText}
+                    onChange={(e) => setEditedText(e.target.value)}
+                  />
+                  <button onClick={() => handleSaveEdit(task.id)}>Save</button>
+                </>
+              ) : (
+                <>
+                  {task.text}
+                  <button onClick={() => handleEdit(task.id, task.text)}>✏️</button>
+                  <button onClick={() => handleDelete(task.id)}>❌</button>
+                </>
+              )}
             </li>
           ))
         )}
