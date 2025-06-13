@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
+import NotesPage from "./pages/NotesPage";
 
 function App() {
   const [tasks, setTasks] = useState(() => {
-    // Load tasks from local storage when the component mounts
     const storedTasks = localStorage.getItem("tasks");
     return storedTasks ? JSON.parse(storedTasks) : [];
   });
 
-  // Save tasks to local storage whenever tasks change
   useEffect(() => {
-    console.log("Saving tasks to localStorage:", tasks);
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
 
@@ -21,11 +21,23 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>Task Manager</h1>
-      <TaskForm addTask={addTask} />
-      <TaskList tasks={tasks} setTasks={setTasks} />
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <h1>Task Manager</h1>
+                <TaskForm addTask={addTask} />
+                <TaskList tasks={tasks} setTasks={setTasks} />
+              </>
+            }
+          />
+          <Route path="/notes" element={<NotesPage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
